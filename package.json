@@ -4,6 +4,9 @@
   "description": "WeatherLink Live Viewer - UDP data viewer for WeatherLink devices",
   "main": "server.js",
   "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
     "start": "node server.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -14,6 +17,12 @@
   "dependencies": {
     "bonjour-hap": "^3.9.1",
     "express": "^5.1.0",
+    "react": "^19.2.0",
+    "react-dom": "^19.2.0",
     "ws": "^8.18.3"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-react": "^5.1.1",
+    "vite": "^7.2.4"
   }
 }

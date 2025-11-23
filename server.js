@@ -22,10 +22,11 @@ let latestHttpData = null;
 let httpPollInterval = null;
 let realtimeRefreshInterval = null;
 
-app.use(express.static('public'));
+app.use(express.static('dist'));
+app.use('/debug.html', express.static(path.join(__dirname, 'public', 'debug.html')));
 
 app.get('/', (req, res) => {
-  res.sendFile(path.join(__dirname, 'public', 'index.html'));
+  res.sendFile(path.join(__dirname, 'dist', 'index.html'));
 });
 
 wss.on('connection', (ws) => {
