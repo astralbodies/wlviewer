@@ -1,0 +1,19 @@
+{
+  "name": "wlviewer",
+  "version": "1.0.0",
+  "description": "WeatherLink Live Viewer - UDP data viewer for WeatherLink devices",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "dependencies": {
+    "bonjour-hap": "^3.9.1",
+    "express": "^5.1.0",
+    "ws": "^8.18.3"
+  }
+}

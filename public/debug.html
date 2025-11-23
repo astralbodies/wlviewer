@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Debug - WeatherLink Live Viewer</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #1e1e1e;
+            color: #d4d4d4;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        h1 {
+            color: #4ec9b0;
+            margin-bottom: 10px;
+        }
+
+        .status {
+            display: inline-block;
+            padding: 5px 15px;
+            border-radius: 15px;
+            font-size: 14px;
+            margin-top: 10px;
+        }
+
+        .status.connected {
+            background-color: #4ec9b0;
+            color: #1e1e1e;
+        }
+
+        .status.disconnected {
+            background-color: #f48771;
+            color: #1e1e1e;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .info {
+            background-color: #252526;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            border-left: 4px solid #4ec9b0;
+        }
+
+        .info p {
+            margin: 5px 0;
+        }
+
+        .data-container {
+            background-color: #252526;
+            padding: 20px;
+            border-radius: 5px;
+            min-height: 400px;
+        }
+
+        .data-entry {
+            background-color: #2d2d30;
+            padding: 15px;
+            margin-bottom: 15px;
+            border-radius: 5px;
+            border-left: 3px solid #569cd6;
+            animation: slideIn 0.3s ease-out;
+        }
+
+        .data-entry.http {
+            border-left-color: #4ec9b0;
+        }
+
+        .data-entry.udp {
+            border-left-color: #c586c0;
+        }
+
+        .source-badge {
+            display: inline-block;
+            padding: 3px 10px;
+            border-radius: 3px;
+            font-size: 11px;
+            font-weight: bold;
+            text-transform: uppercase;
+            margin-left: 10px;
+        }
+
+        .source-badge.http {
+            background-color: #4ec9b0;
+            color: #1e1e1e;
+        }
+
+        .source-badge.udp {
+            background-color: #c586c0;
+            color: #1e1e1e;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .data-entry .timestamp {
+            color: #858585;
+            font-size: 12px;
+            margin-bottom: 8px;
+        }
+
+        .data-entry .source {
+            color: #4ec9b0;
+            font-size: 13px;
+            margin-bottom: 10px;
+        }
+
+        pre {
+            background-color: #1e1e1e;
+            padding: 15px;
+            border-radius: 3px;
+            overflow-x: auto;
+            font-size: 13px;
+            line-height: 1.5;
+        }
+
+        .no-data {
+            text-align: center;
+            padding: 40px;
+            color: #858585;
+            font-style: italic;
+        }
+
+        .clear-btn {
+            background-color: #569cd6;
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            margin-bottom: 15px;
+            transition: background-color 0.2s;
+        }
+
+        .clear-btn:hover {
+            background-color: #4a8bc2;
+        }
+
+        .nav {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .nav a {
+            color: #4ec9b0;
+            text-decoration: none;
+            padding: 8px 16px;
+            border-radius: 5px;
+            transition: background-color 0.2s;
+        }
+
+        .nav a:hover {
+            background-color: #252526;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="nav">
+            <a href="/">← Back to Dashboard</a>
+        </div>
+
+        <div class="header">
+            <h1>Debug Console</h1>
+            <span class="status disconnected" id="status">Disconnected</span>
+        </div>
+
+        <div class="info">
+            <p><strong>Data Sources:</strong> HTTP Polling (60s) + UDP Broadcasts (2.5s)</p>
+            <p><strong>Display:</strong> All data received via WebSocket</p>
+            <p><strong>UDP:</strong> Port dynamically obtained from device via /v1/real_time</p>
+            <p><strong>Status:</strong> Waiting for data...</p>
+        </div>
+
+        <button class="clear-btn" onclick="clearData()">Clear Data</button>
+
+        <div class="data-container" id="dataContainer">
+            <div class="no-data">No data received yet. Waiting for WebSocket messages...</div>
+        </div>
+    </div>
+
+    <script>
+        let ws;
+        const dataContainer = document.getElementById('dataContainer');
+        const statusElement = document.getElementById('status');
+        let messageCount = 0;
+        const maxMessages = 50;
+
+        function connectWebSocket() {
+            const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+            const wsUrl = `${protocol}//${window.location.host}`;
+
+            ws = new WebSocket(wsUrl);
+
+            ws.onopen = () => {
+                console.log('WebSocket connected');
+                statusElement.textContent = 'Connected';
+                statusElement.className = 'status connected';
+            };
+
+            ws.onmessage = (event) => {
+                const message = JSON.parse(event.data);
+                displayData(message);
+            };
+
+            ws.onclose = () => {
+                console.log('WebSocket disconnected');
+                statusElement.textContent = 'Disconnected';
+                statusElement.className = 'status disconnected';
+                setTimeout(connectWebSocket, 3000);
+            };
+
+            ws.onerror = (error) => {
+                console.error('WebSocket error:', error);
+            };
+        }
+
+        function displayData(message) {
+            if (messageCount === 0) {
+                dataContainer.innerHTML = '';
+            }
+
+            const entry = document.createElement('div');
+            const dataSource = message.dataSource || 'unknown';
+            entry.className = `data-entry ${dataSource}`;
+
+            const timestamp = document.createElement('div');
+            timestamp.className = 'timestamp';
+            timestamp.textContent = `Received: ${new Date(message.timestamp).toLocaleString()}`;
+
+            const source = document.createElement('div');
+            source.className = 'source';
+            source.innerHTML = `Source: ${message.source} <span class="source-badge ${dataSource}">${dataSource.toUpperCase()}</span>`;
+
+            const dataContent = document.createElement('pre');
+            dataContent.textContent = JSON.stringify(message.data, null, 2);
+
+            entry.appendChild(timestamp);
+            entry.appendChild(source);
+            entry.appendChild(dataContent);
+
+            dataContainer.insertBefore(entry, dataContainer.firstChild);
+
+            messageCount++;
+
+            if (messageCount > maxMessages) {
+                dataContainer.removeChild(dataContainer.lastChild);
+                messageCount = maxMessages;
+            }
+        }
+
+        function clearData() {
+            dataContainer.innerHTML = '<div class="no-data">Data cleared. Waiting for new UDP packets...</div>';
+            messageCount = 0;
+        }
+
+        connectWebSocket();
+    </script>
+</body>
+</html>
