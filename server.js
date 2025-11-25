@@ -24,12 +24,9 @@ let realtimeRefreshInterval = null;
 let cachedWeatherMessage = null;
 
 app.use(express.static("dist"));
-app.use(
-  "/debug.html",
-  express.static(path.join(__dirname, "public", "debug.html"))
-);
 
-app.get("/", (req, res) => {
+// Handle client-side routing - serve index.html for all routes
+app.get("*", (req, res) => {
   res.sendFile(path.join(__dirname, "dist", "index.html"));
 });
 

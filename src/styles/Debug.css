@@ -1,0 +1,167 @@
+.debug-page {
+    background-color: #1e1e1e;
+    color: #d4d4d4;
+    min-height: 100vh;
+    padding: 20px;
+}
+
+.debug-page .header {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.debug-page h1 {
+    color: #4ec9b0;
+    margin-bottom: 10px;
+}
+
+.debug-page .status {
+    display: inline-block;
+    padding: 5px 15px;
+    border-radius: 15px;
+    font-size: 14px;
+    margin-top: 10px;
+}
+
+.debug-page .status.connected {
+    background-color: #4ec9b0;
+    color: #1e1e1e;
+}
+
+.debug-page .status.disconnected {
+    background-color: #f48771;
+    color: #1e1e1e;
+}
+
+.debug-page .container {
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.debug-page .info {
+    background-color: #252526;
+    padding: 15px;
+    border-radius: 5px;
+    margin-bottom: 20px;
+    border-left: 4px solid #4ec9b0;
+}
+
+.debug-page .info p {
+    margin: 5px 0;
+}
+
+.debug-page .data-container {
+    background-color: #252526;
+    padding: 20px;
+    border-radius: 5px;
+    min-height: 400px;
+}
+
+.debug-page .data-entry {
+    background-color: #2d2d30;
+    padding: 15px;
+    margin-bottom: 15px;
+    border-radius: 5px;
+    border-left: 3px solid #569cd6;
+    animation: slideIn 0.3s ease-out;
+}
+
+.debug-page .data-entry.http {
+    border-left-color: #4ec9b0;
+}
+
+.debug-page .data-entry.udp {
+    border-left-color: #c586c0;
+}
+
+.debug-page .source-badge {
+    display: inline-block;
+    padding: 3px 10px;
+    border-radius: 3px;
+    font-size: 11px;
+    font-weight: bold;
+    text-transform: uppercase;
+    margin-left: 10px;
+}
+
+.debug-page .source-badge.http {
+    background-color: #4ec9b0;
+    color: #1e1e1e;
+}
+
+.debug-page .source-badge.udp {
+    background-color: #c586c0;
+    color: #1e1e1e;
+}
+
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.debug-page .data-entry .timestamp {
+    color: #858585;
+    font-size: 12px;
+    margin-bottom: 8px;
+}
+
+.debug-page .data-entry .source {
+    color: #4ec9b0;
+    font-size: 13px;
+    margin-bottom: 10px;
+}
+
+.debug-page pre {
+    background-color: #1e1e1e;
+    padding: 15px;
+    border-radius: 3px;
+    overflow-x: auto;
+    font-size: 13px;
+    line-height: 1.5;
+}
+
+.debug-page .no-data {
+    text-align: center;
+    padding: 40px;
+    color: #858585;
+    font-style: italic;
+}
+
+.debug-page .clear-btn {
+    background-color: #569cd6;
+    color: #fff;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 14px;
+    margin-bottom: 15px;
+    transition: background-color 0.2s;
+}
+
+.debug-page .clear-btn:hover {
+    background-color: #4a8bc2;
+}
+
+.debug-page .nav {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.debug-page .nav a {
+    color: #4ec9b0;
+    text-decoration: none;
+    padding: 8px 16px;
+    border-radius: 5px;
+    transition: background-color 0.2s;
+}
+
+.debug-page .nav a:hover {
+    background-color: #252526;
+}
