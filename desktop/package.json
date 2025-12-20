@@ -29,8 +29,12 @@
     ],
     "extraResources": [
       {
-        "from": "../server.js",
-        "to": "app/server.js"
+        "from": "../server",
+        "to": "app/server"
+      },
+      {
+        "from": "../dist",
+        "to": "app/dist"
       },
       {
         "from": "../public",

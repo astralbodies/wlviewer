@@ -113,12 +113,12 @@ function startServer() {
     let serverCwd;
 
     if (isDev) {
-      // Development: server.js is in parent directory
-      serverPath = path.join(__dirname, '..', 'server.js');
+      // Development: server is in parent directory's server folder
+      serverPath = path.join(__dirname, '..', 'server', 'index.js');
       serverCwd = path.join(__dirname, '..');
     } else {
-      // Production: server.js is in Resources/app
-      serverPath = path.join(process.resourcesPath, 'app', 'server.js');
+      // Production: server is in Resources/app/server folder
+      serverPath = path.join(process.resourcesPath, 'app', 'server', 'index.js');
       serverCwd = path.join(process.resourcesPath, 'app');
     }
 
@@ -126,7 +126,7 @@ function startServer() {
     console.log('Starting server from:', serverPath);
     console.log('Server working directory:', serverCwd);
 
-    // Verify server.js exists
+    // Verify server exists
     if (!fs.existsSync(serverPath)) {
       const error = new Error(`Server file not found at: ${serverPath}`);
       console.error(error.message);
