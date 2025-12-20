@@ -1,9 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { useWeatherData } from '../hooks/useWeatherData';
-import Header from '../components/Header';
-import WeatherCard from '../components/WeatherCard';
-import WindDisplay from '../components/WindDisplay';
+import { degreesToOrdinal, formatValue } from '../utils/weatherUtils';
 
 const isElectron = window.electron?.isElectron || false;
 
@@ -38,104 +36,114 @@ function Dashboard() {
   const condition = getCondition();
   const indoorData = getIndoorData();
   const pressure = getPressureData();
-  const timeStr = lastUpdate ? lastUpdate.toLocaleTimeString() : '';
+  const windDir = condition.wind_dir_last;
+  const windOrdinal = windDir !== undefined ? degreesToOrdinal(windDir) : '--';
 
   return (
-    <div className="container">
-      <Header wsConnected={wsConnected} httpStatus={httpStatus} />
-
+    <div className="dashboard">
       {!isElectron && (
         <div className="nav">
-          <Link to="/debug">Debug Console →</Link>
+          <Link to="/debug">Debug Console</Link>
         </div>
       )}
 
-      <div className="section-title">Outdoor Weather</div>
+      {/* Connection Status */}
+      <div className="connection-status">
+        <span>
+          <span className={`status-dot ${wsConnected ? 'connected' : 'disconnected'}`} />
+          WebSocket
+        </span>
+        <span>
+          <span className={`status-dot ${httpStatus === 'active' ? 'connected' : 'disconnected'}`} />
+          HTTP
+        </span>
+      </div>
 
-      <div className="main-weather-layout">
-        <div className="left-column">
-          <WeatherCard
-            label="Temperature"
-            value={condition.temp}
-            unit="°F"
-            decimals={1}
-            timeStr={timeStr}
-          />
-          <WeatherCard
-            label="Humidity"
-            value={condition.hum}
-            unit="%"
-            decimals={1}
-            timeStr={timeStr}
-          />
-          <WeatherCard
-            label="Dew Point"
-            value={condition.dew_point}
-            unit="°F"
-            decimals={1}
-            timeStr={timeStr}
-          />
-          <WeatherCard
-            label="Wind Chill"
-            value={condition.wind_chill}
-            unit="°F"
-            decimals={1}
-            timeStr={timeStr}
-          />
+      {/* Main Content */}
+      <div className="main-content">
+        {/* Primary Readings: Temp and Wind */}
+        <div className="primary-readings">
+          <div className="temp-display">
+            <div className="temp-value">
+              {formatValue(condition.temp, 0)}
+            </div>
+            <div className="temp-label">outdoor</div>
+          </div>
+
+          <div className="wind-display">
+            <div className="wind-arrow-container">
+              <div
+                className="wind-arrow"
+                style={{ transform: windDir !== undefined ? `rotate(${windDir}deg)` : 'rotate(0deg)' }}
+              >
+                <svg viewBox="0 0 32 32">
+                  <path d="M16 3L26 28L16 22L6 28Z" />
+                </svg>
+              </div>
+            </div>
+            <div className="wind-info">
+              <div className="wind-speed">
+                {formatValue(condition.wind_speed_last, 1)}
+                <span className="unit">mph</span>
+              </div>
+              <div className="wind-direction-text">{windOrdinal}</div>
+            </div>
+          </div>
         </div>
 
-        <WindDisplay
-          windDir={condition.wind_dir_last}
-          windSpeed={condition.wind_speed_last}
-          timeStr={timeStr}
-        />
+        {/* Secondary Readings */}
+        <div className="secondary-readings">
+          <div className="metric">
+            <div className="metric-value">
+              {formatValue(condition.hum, 0)}
+              <span className="unit">%</span>
+            </div>
+            <div className="metric-label">humidity</div>
+          </div>
 
-        <div className="right-column">
-          <WeatherCard
-            label="Rain Rate"
-            value={condition.rain_rate_last}
-            unit="in/hr"
-            decimals={2}
-            timeStr={timeStr}
-          />
-          <WeatherCard
-            label="Rain (24hr)"
-            value={condition.rain_24_hr}
-            unit="inches"
-            decimals={2}
-            timeStr={timeStr}
-          />
-          <WeatherCard
-            label="Pressure"
-            value={pressure}
-            unit="inHg"
-            decimals={2}
-            timeStr={timeStr}
-            className="pressure-card"
-          />
+          <div className="metric tier-3">
+            <div className="metric-value">
+              {formatValue(condition.dew_point, 0)}
+              <span className="unit">°</span>
+            </div>
+            <div className="metric-label">dew point</div>
+          </div>
+
+          <div className="metric tier-2">
+            <div className="metric-value">
+              {formatValue(pressure, 2)}
+              <span className="unit">"</span>
+            </div>
+            <div className="metric-label">pressure</div>
+          </div>
+
+          <div className="metric rain-cluster">
+            <div className="rain-metric">
+              <div className="metric-value">
+                {formatValue(condition.rain_rate_last, 2)}
+                <span className="unit">"</span>
+              </div>
+              <div className="metric-label">rain/hr</div>
+            </div>
+            <div className="rain-metric">
+              <div className="metric-value">
+                {formatValue(condition.rain_storm, 2)}
+                <span className="unit">"</span>
+              </div>
+              <div className="metric-label">storm</div>
+            </div>
+          </div>
         </div>
       </div>
 
-      <div className="section-title">Indoor Weather</div>
-      <div className="dashboard-grid">
-        <WeatherCard
-          label="Temperature"
-          value={indoorData.temp_in}
-          unit="°F"
-          decimals={1}
-          timeStr={timeStr}
-        />
-        <WeatherCard
-          label="Humidity"
-          value={indoorData.hum_in}
-          unit="%"
-          decimals={1}
-          timeStr={timeStr}
-        />
-      </div>
-
-      <div className="last-update">
-        Last data received: <span>{lastUpdate ? lastUpdate.toLocaleString() : 'Never'}</span>
+      {/* Footer */}
+      <div className="dashboard-footer">
+        <div className="indoor-readings">
+          <span>Indoor: {formatValue(indoorData.temp_in, 0)}° / {formatValue(indoorData.hum_in, 0)}%</span>
+        </div>
+        <div className="last-update">
+          {lastUpdate ? lastUpdate.toLocaleTimeString() : '--:--'}
+        </div>
       </div>
     </div>
   );

@@ -4,6 +4,8 @@ A web and desktop application that automatically discovers WeatherLink Live devi
 
 Available as both a web application and a native desktop app (Electron.js).
 
+![Screenshot of the Electron app](screenshot.png)
+
 ## Features
 
 - **Automatic Device Discovery**: Uses mDNS/DNS-SD to automatically find WeatherLink Live devices on your network
@@ -40,6 +42,7 @@ npm start
 ```
 
 The application will:
+
 - Start a web server on http://localhost:3000
 - Automatically discover WeatherLink Live devices using mDNS (service: `_weatherlinklive._tcp.local.`)
 - Activate real-time UDP streaming and bind to the broadcast port returned by the device
@@ -47,6 +50,7 @@ The application will:
 - Automatically refresh the real-time UDP session every 50 minutes (1-hour sessions)
 
 Open your browser and navigate to:
+
 - **http://localhost:3000** - Dashboard view with live weather data
 - **http://localhost:3000/debug.html** - Debug console with raw JSON data
 
@@ -63,6 +67,7 @@ npm start
 ```
 
 The desktop app will:
+
 - Automatically start the web server
 - Launch in a native window
 - Provide menu bar navigation (Dashboard, Debug Console)
@@ -119,12 +124,14 @@ wlviewer/
 When adding new files to the project, follow these conventions:
 
 **Server-Side Code** (`server/`)
+
 - **Entry Point**: Main server logic goes in `server/index.js`
 - **Utilities**: Shared server utilities, helpers, and modules go in `server/utils/`
 - **Tests**: Server test files go in `server/__tests__/` with `.test.js` extension
 - **Dev Tools**: Development scripts and tools stay in `server/` root
 
 **Frontend Code** (`src/`)
+
 - **Components**: Reusable UI components go in `src/components/`
 - **Pages**: Top-level route components go in `src/pages/`
 - **Hooks**: Custom React hooks go in `src/hooks/`
@@ -132,6 +139,7 @@ When adding new files to the project, follow these conventions:
 - **Styles**: CSS files go in `src/styles/`
 
 **General Principles**
+
 - Keep the project root clean - only configuration files belong there
 - Group related files together in logical directories
 - Use descriptive, lowercase filenames with hyphens (e.g., `rain-conversion.js`)
@@ -142,6 +150,7 @@ When adding new files to the project, follow these conventions:
 ## Configuration
 
 Default settings in `server/index.js`:
+
 - **Web Server**: 3000
 - **HTTP Poll Interval**: 60 seconds (60000ms)
 - **Real-time Duration**: 1 hour (3600s)

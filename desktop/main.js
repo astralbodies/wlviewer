@@ -83,6 +83,27 @@ function createWindow() {
       ]
     },
     {
+      label: 'Window',
+      submenu: [
+        {
+          label: 'Close',
+          accelerator: 'CmdOrCtrl+W',
+          click: () => {
+            const focusedWindow = BrowserWindow.getFocusedWindow();
+            if (focusedWindow) {
+              focusedWindow.close();
+            }
+          }
+        },
+        { type: 'separator' },
+        {
+          label: 'Minimize',
+          accelerator: 'CmdOrCtrl+M',
+          role: 'minimize'
+        }
+      ]
+    },
+    {
       label: 'Help',
       submenu: [
         {
