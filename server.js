@@ -5,6 +5,7 @@ const https = require("https");
 const WebSocket = require("ws");
 const path = require("path");
 const Bonjour = require("bonjour-hap");
+const { convertRainFields } = require("./rainConversion");
 
 const WEB_PORT = 3000;
 const POLL_INTERVAL = 60000; // 60 seconds
@@ -234,6 +235,12 @@ function pollCurrentConditions() {
           console.log("Received HTTP data from WeatherLink device");
 
           const weatherData = jsonData.data || jsonData;
+
+          // Convert rain fields in HTTP data
+          if (weatherData.conditions) {
+            weatherData.conditions = weatherData.conditions.map(convertRainFields);
+          }
+
           latestHttpData = weatherData;
 
           broadcastToClients({
@@ -254,7 +261,12 @@ function pollCurrentConditions() {
 
 function mergeWeatherData(udpData) {
   if (!latestHttpData) {
-    return udpData;
+    // Convert rain fields in UDP-only data
+    const converted = JSON.parse(JSON.stringify(udpData));
+    if (converted.conditions) {
+      converted.conditions = converted.conditions.map(convertRainFields);
+    }
+    return converted;
   }
 
   const merged = JSON.parse(JSON.stringify(latestHttpData));
@@ -300,6 +312,11 @@ function mergeWeatherData(udpData) {
         }
       }
     });
+  }
+
+  // Convert all rain fields after merging
+  if (merged.conditions) {
+    merged.conditions = merged.conditions.map(convertRainFields);
   }
 
   return merged;
