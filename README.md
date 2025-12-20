@@ -72,10 +72,16 @@ See [desktop/README.md](desktop/README.md) for building installers and more deta
 
 ## Testing
 
+Run the test suite:
+
+```bash
+npm test
+```
+
 A test script is included to send sample UDP data:
 
 ```bash
-node test-udp.js
+node server/test-udp.js
 ```
 
 This will send sample JSON data to UDP port 22222 (the default WeatherLink port) for testing purposes.
@@ -83,12 +89,59 @@ This will send sample JSON data to UDP port 22222 (the default WeatherLink port)
 If the server is using a different port, check the server logs for the actual port and specify it:
 
 ```bash
-node test-udp.js 22223
+node server/test-udp.js 22223
 ```
+
+## Project Structure and File Organization
+
+This project follows a clear separation between frontend and backend code:
+
+```
+wlviewer/
+├── server/              # Backend server code
+│   ├── index.js         # Main server entry point
+│   ├── utils/           # Server utility modules
+│   ├── __tests__/       # Server tests (Jest)
+│   └── test-udp.js      # Development utilities
+├── src/                 # Frontend React application
+│   ├── components/      # Reusable React components
+│   ├── pages/           # Page-level components
+│   ├── hooks/           # Custom React hooks
+│   ├── utils/           # Frontend utilities
+│   └── styles/          # CSS and styling files
+├── desktop/             # Electron desktop application
+├── dist/                # Built frontend assets (generated)
+└── public/              # Static assets
+```
+
+### File Organization Guidelines
+
+When adding new files to the project, follow these conventions:
+
+**Server-Side Code** (`server/`)
+- **Entry Point**: Main server logic goes in `server/index.js`
+- **Utilities**: Shared server utilities, helpers, and modules go in `server/utils/`
+- **Tests**: Server test files go in `server/__tests__/` with `.test.js` extension
+- **Dev Tools**: Development scripts and tools stay in `server/` root
+
+**Frontend Code** (`src/`)
+- **Components**: Reusable UI components go in `src/components/`
+- **Pages**: Top-level route components go in `src/pages/`
+- **Hooks**: Custom React hooks go in `src/hooks/`
+- **Utilities**: Frontend helper functions go in `src/utils/`
+- **Styles**: CSS files go in `src/styles/`
+
+**General Principles**
+- Keep the project root clean - only configuration files belong there
+- Group related files together in logical directories
+- Use descriptive, lowercase filenames with hyphens (e.g., `rain-conversion.js`)
+- Test files should live next to the code they test or in `__tests__/` directories
+- Separate concerns: frontend (React) and backend (Node/Express) should not mix
+- Use `utils/` subdirectories for shared helper functions in both frontend and backend
 
 ## Configuration
 
-Default settings in `server.js`:
+Default settings in `server/index.js`:
 - **Web Server**: 3000
 - **HTTP Poll Interval**: 60 seconds (60000ms)
 - **Real-time Duration**: 1 hour (3600s)

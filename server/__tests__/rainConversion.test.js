@@ -2,7 +2,7 @@
  * Jest tests for rain conversion functions
  */
 
-const { convertRainValue, convertRainFields } = require('./rainConversion');
+const { convertRainValue, convertRainFields } = require('../utils/rainConversion');
 
 describe('convertRainValue', () => {
   describe('rain_size=1 (0.01" per count)', () => {

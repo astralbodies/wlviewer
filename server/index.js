@@ -5,7 +5,7 @@ const https = require("https");
 const WebSocket = require("ws");
 const path = require("path");
 const Bonjour = require("bonjour-hap");
-const { convertRainFields } = require("./rainConversion");
+const { convertRainFields } = require("./utils/rainConversion");
 
 const WEB_PORT = 3000;
 const POLL_INTERVAL = 60000; // 60 seconds
@@ -24,11 +24,11 @@ let httpPollInterval = null;
 let realtimeRefreshInterval = null;
 let cachedWeatherMessage = null;
 
-app.use(express.static("dist"));
+app.use(express.static(path.join(__dirname, "..", "dist")));
 
 // Handle client-side routing - serve index.html for all routes
 app.use((req, res) => {
-  res.sendFile(path.join(__dirname, "dist", "index.html"));
+  res.sendFile(path.join(__dirname, "..", "dist", "index.html"));
 });
 
 wss.on("connection", (ws) => {
