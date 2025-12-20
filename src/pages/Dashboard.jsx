@@ -5,6 +5,8 @@ import Header from '../components/Header';
 import WeatherCard from '../components/WeatherCard';
 import WindDisplay from '../components/WindDisplay';
 
+const isElectron = window.electron?.isElectron || false;
+
 function Dashboard() {
   const { weatherData, wsConnected, httpStatus, lastUpdate } = useWeatherData();
 
@@ -42,9 +44,11 @@ function Dashboard() {
     <div className="container">
       <Header wsConnected={wsConnected} httpStatus={httpStatus} />
 
-      <div className="nav">
-        <Link to="/debug">Debug Console →</Link>
-      </div>
+      {!isElectron && (
+        <div className="nav">
+          <Link to="/debug">Debug Console →</Link>
+        </div>
+      )}
 
       <div className="section-title">Outdoor Weather</div>
 

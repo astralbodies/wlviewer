@@ -4,6 +4,7 @@ const { spawn } = require('child_process');
 const fs = require('fs');
 
 let mainWindow;
+let debugWindow;
 let serverProcess;
 const WEB_PORT = 3000;
 
@@ -28,19 +29,6 @@ function createWindow() {
     {
       label: 'File',
       submenu: [
-        {
-          label: 'Dashboard',
-          click: () => {
-            mainWindow.loadURL(`http://localhost:${WEB_PORT}`);
-          }
-        },
-        {
-          label: 'Debug Console',
-          click: () => {
-            mainWindow.loadURL(`http://localhost:${WEB_PORT}/debug.html`);
-          }
-        },
-        { type: 'separator' },
         {
           label: 'Reload',
           accelerator: 'CmdOrCtrl+R',
@@ -93,6 +81,22 @@ function createWindow() {
           }
         }
       ]
+    },
+    {
+      label: 'Help',
+      submenu: [
+        {
+          label: 'Troubleshooting',
+          submenu: [
+            {
+              label: 'Debug Console',
+              click: () => {
+                createDebugWindow();
+              }
+            }
+          ]
+        }
+      ]
     }
   ];
 
@@ -101,6 +105,34 @@ function createWindow() {
 
   mainWindow.on('closed', () => {
     mainWindow = null;
+  });
+}
+
+function createDebugWindow() {
+  // If debug window already exists, focus it
+  if (debugWindow) {
+    debugWindow.focus();
+    return;
+  }
+
+  debugWindow = new BrowserWindow({
+    width: 900,
+    height: 700,
+    minWidth: 600,
+    minHeight: 400,
+    webPreferences: {
+      preload: path.join(__dirname, 'preload.js'),
+      nodeIntegration: false,
+      contextIsolation: true
+    },
+    title: 'Debug Console - WeatherLink Live Viewer',
+    backgroundColor: '#1a1a2e'
+  });
+
+  debugWindow.loadURL(`http://localhost:${WEB_PORT}/debug`);
+
+  debugWindow.on('closed', () => {
+    debugWindow = null;
   });
 }
 

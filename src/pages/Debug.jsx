@@ -4,6 +4,7 @@ import { useWeatherData } from '../hooks/useWeatherData';
 import '../styles/Debug.css';
 
 const MAX_MESSAGES = 50;
+const isElectron = window.electron?.isElectron || false;
 
 const Debug = () => {
   const { wsConnected } = useWeatherData();
@@ -55,9 +56,11 @@ const Debug = () => {
   return (
     <div className="debug-page">
       <div className="container">
-        <div className="nav">
-          <Link to="/">← Back to Dashboard</Link>
-        </div>
+        {!isElectron && (
+          <div className="nav">
+            <Link to="/">← Back to Dashboard</Link>
+          </div>
+        )}
 
         <div className="header">
           <h1>Debug Console</h1>
